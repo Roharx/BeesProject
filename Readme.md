@@ -91,9 +91,17 @@ _Below is an example of how you can instruct your audience on installing and set
 
 - [x] Add Readme
 - [x] Add back to top links
-- [ ] Finish backend
+- [x] Construct database
+- [ ] Connect backend to database
+- [ ] Build up backend
+- [ ] Create tests for backend in postman
+- [ ] Finish up backend
+- [ ] Create frontend
+- [ ] Connect frontend and backend
 - [ ] Add UI
-- [ ] Change to bigger DB
+- [ ] Playwright tests for UI
+- [ ] Bugfixes, more tests, wrapup to 1.0
+- [ ] Change to bigger DB plan (at launch)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
