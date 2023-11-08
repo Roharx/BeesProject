@@ -91,9 +91,17 @@ _Below is an example of how you can instruct your audience on installing and set
 
 - [x] Add Readme
 - [x] Add back to top links
-- [ ] Finish backend
+- [x] Construct database
+- [ ] Connect backend to database
+- [ ] Build up backend
+- [ ] Create tests for backend in postman
+- [ ] Finish up backend
+- [ ] Create frontend
+- [ ] Connect frontend and backend
 - [ ] Add UI
-- [ ] Change to bigger DB
+- [ ] Playwright tests for UI
+- [ ] Bugfixes, more tests, wrapup to 1.0
+- [ ] Change to bigger DB plan (at launch)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -122,7 +130,7 @@ The readme file is distributed under the MIT License. See `LICENSE.txt` for more
 
 Bálint Farkas - [Bálint Farkas](https://www.facebook.com/ffbalint/) - balint.imal@gmail.com
 
-Project Link: [Bees Project](https://github.com/Roharx/BeesProject)
+Project Link - [Bees Project](https://github.com/Roharx/BeesProject)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
