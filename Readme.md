@@ -7,7 +7,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/Roharx/BeesProject">
-    <img src="images/Bee.png" alt="Logo" width="100" height="100" style="image-rendering: -moz-crisp-edges;">
+    <img style="image-rendering: -moz-crisp-edges;" src="images/Bee.png" alt="Logo" width="100" height="100" >
   </a>
 
 <h3 align="center">Bees Project</h3>
