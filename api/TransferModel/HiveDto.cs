@@ -1,8 +1,9 @@
-﻿namespace infrastructure.DataModels;
+﻿using infrastructure.DataModels;
 
-public class Hive
+namespace Bees.TransferModel;
+
+public class HiveDto
 {
-    public int Id { get; set; }
     public int FieldId { get; set; }
     public string Name { get; set; }
     public string Location { get; set; }
@@ -11,7 +12,7 @@ public class Hive
     public bool ReadyToHarvest { get; set; }
     public Ailment[] Ailments { get; set; }
     public string Color { get; set; }
-    public Task[] Tasks { get; set; }
+    public infrastructure.DataModels.Task[] Tasks { get; set; }
     public Bee Bees { get; set; }
     public string? Comment { get; set; }
 }

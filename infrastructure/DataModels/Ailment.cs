@@ -1,9 +1,11 @@
 ﻿namespace infrastructure.DataModels;
 
-public class Bee
+public class Ailment
 {
     public int Id { get; set; }
+    public int HiveId { get; set; }
     public string Name { get; set; }
-    public string Description { get; set; }
+    public AilmentSeverity Severity { get; set; }
     public string? Comment { get; set; }
+    public bool Solved { get; set; }
 }

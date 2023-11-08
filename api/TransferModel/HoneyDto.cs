@@ -1,8 +1,7 @@
-﻿namespace infrastructure.DataModels;
+﻿namespace Bees.TransferModel;
 
-public class Honey
+public class HoneyDto
 {
-    public int Id { get; set; }
     public string Name { get; set; }
     public bool Liquid { get; set; }
     public int Harvest { get; set; }
