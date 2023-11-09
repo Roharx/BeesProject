@@ -13,5 +13,6 @@ public class Hive
     public string Color { get; set; }
     public Task[] Tasks { get; set; }
     public Bee Bees { get; set; }
+    public Harvest[] Harvests { get; set; }
     public string? Comment { get; set; }
 }

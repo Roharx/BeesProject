@@ -87,12 +87,12 @@ _Below is an example of how you can instruct your audience on installing and set
 
 
 <!-- ROADMAP -->
-## Roadmap
+## 1.0 Roadmap
 
 - [x] Add Readme
 - [x] Add back to top links
 - [x] Construct database
-- [ ] Connect backend to database
+- [ ] Connect backend to database (PostgreSQL)
 - [ ] Build up backend
 - [ ] Create tests for backend in postman
 - [ ] Finish up backend
@@ -101,7 +101,12 @@ _Below is an example of how you can instruct your audience on installing and set
 - [ ] Add UI
 - [ ] Playwright tests for UI
 - [ ] Bugfixes, more tests, wrapup to 1.0
-- [ ] Change to bigger DB plan (at launch)
+- -----------------------------------------
+## 2.0 Roadmap
+- [ ] Make a placeholder/emergency UI for mobile view
+- [ ] Start development on mobile app
+- [ ] Evaluate the need for GraphQL
+- [ ] If needed, change to GraphQL
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

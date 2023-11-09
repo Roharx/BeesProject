@@ -3,7 +3,6 @@
 public class Ailment
 {
     public int Id { get; set; }
-    public int HiveId { get; set; }
     public string Name { get; set; }
     public AilmentSeverity Severity { get; set; }
     public string? Comment { get; set; }
