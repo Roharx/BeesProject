@@ -7,5 +7,5 @@ public class Honey
     public bool Liquid { get; set; }
     public int HarvestId { get; set; }
     public float Moisture { get; set; }
-    public string? Comment { get; set; }
+    public string Flowers { get; set; }
 }

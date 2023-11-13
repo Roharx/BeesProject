@@ -1,8 +1,8 @@
 ﻿namespace infrastructure.DataModels;
-/*
- * HoneyAmount: ml
- * BeeswaxAmount: ml
- */
+/// <summary>
+/// HoneyAmount: ml
+/// BeeswaxAmount: ml
+/// </summary>
 public class Harvest
 {
     public int Id { get; set; }

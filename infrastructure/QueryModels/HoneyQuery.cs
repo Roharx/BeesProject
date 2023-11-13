@@ -2,10 +2,10 @@
 
 public class HoneyQuery
 {
-    public int Id { get; set; }
-    public string Name { get; set; }
-    public bool Liquid { get; set; }
-    public int Harvest { get; set; }
-    public float Moisture { get; set; }
-    public string? Comment { get; set; }
+    public int HoneyId { get; set; }
+    public string HoneyName { get; set; }
+    public bool HoneyLiquid { get; set; }
+    public int HoneyHarvest { get; set; }
+    public float HoneyMoisture { get; set; }
+    public string HoneyFlowers { get; set; }
 }

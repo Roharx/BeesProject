@@ -10,6 +10,7 @@ public class HiveQuery
     public DateTime HiveLastCheck { get; set; }//timestamp
     public bool HiveReadyToHarvest { get; set; }
     public string HiveColor { get; set; }
+    public int BeeId { get; set; }
     public string? HiveComment { get; set; }
 }
 //TODO: comments are for dev only, remove at release

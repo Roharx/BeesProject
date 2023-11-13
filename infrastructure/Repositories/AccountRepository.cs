@@ -5,62 +5,50 @@ using Npgsql;
 
 namespace infrastructure.Repositories;
 
-public class AccountRepository
+public class AccountRepository : RepositoryBase
 {
     private NpgsqlDataSource _dataSource;
 
-    public AccountRepository(NpgsqlDataSource dataSource)
-    {
-        _dataSource = dataSource;
-    }
+    public AccountRepository(NpgsqlDataSource dataSource) : base(dataSource) { }
 
     public IEnumerable<AccountQuery> GetAllAccounts()
     {
-        string sql = $@"SELECT * FROM account";
-
-        using (var conn = _dataSource.OpenConnection())
-        {
-            return conn.Query<AccountQuery>(sql);
-        }
+        return GetAllItems<AccountQuery>("account");
     }
 
-    public bool CreateAccount(string accountName, string accountEmail, string accountPassword, AccountRank accountRank)
+    public int CreateAccount(string accountName, string accountEmail, string accountPassword, AccountRank accountRank)
     {
-        string sql = $@"UPDATE account SET name=@name, email=@email, password=@password, rank=@rank WHERE id=@id";
-
-        using (var conn = _dataSource.OpenConnection())
+        var parameters = new
         {
-            conn.Execute(sql, new {
-                Name = accountName,
-                Email = accountEmail,
-                Password = accountPassword,
-                Rank = accountRank});
-            return true;
-        }
+            name = accountName,
+            email = accountEmail,
+            password = accountPassword,
+            rank = accountRank
+        };
+
+        return CreateItem<int>("account", parameters);//TODO: check if it works, fix if not
     }
+
     public bool UpdateAccount(AccountQuery account)
     {
-        string sql = $@"UPDATE account SET name=@name, email=@email, password=@password, rank=@rank WHERE id=@id";
-
-        using (var conn = _dataSource.OpenConnection())
-        {
-            conn.Execute(sql, new { //Protects against sql injection if used properly TODO: Ask to be sure
-                Name = account.AccountName,
-                Email = account.AccountEmail,
-                Password = account.AccountPassword,
-                Rank = account.AccountRank,
-                Id = account.AccountId });
-            return true;
-        }
+        return UpdateEntity("account", account, "id");
     }
+
     public bool DeleteAccount(int accountId)
     {
-        string sql = $@"DELETE FROM account WHERE id=@id";
+        return DeleteItem("account", accountId);
+    }
+
+    //TODO: remove later, don't need it
+    public AccountQuery GetAccountByName(string accountName)
+    {
+        const string sql = $@"SELECT * FROM account WHERE id = @accountId";
 
         using (var conn = _dataSource.OpenConnection())
         {
-            conn.Execute(sql, new { id = accountId });
-            return true;
+            return conn.QueryFirstOrDefault<AccountQuery>(sql, new { accountName }) ??
+                   throw new Exception(
+                       $"{accountName} not found"); //TODO: Change to GlobalExceptionHandler later, delete later
         }
     }
 }

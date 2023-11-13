@@ -1,0 +1,110 @@
+﻿using Dapper;
+using Npgsql;
+
+namespace infrastructure.Repositories;
+
+public class RepositoryBase
+{
+    private readonly NpgsqlDataSource _dataSource;
+
+    public RepositoryBase(NpgsqlDataSource dataSource)
+    {
+        _dataSource = dataSource;
+    }
+
+    protected IEnumerable<T> GetAllItems<T>(string tableName)
+    {
+        string sql = $"SELECT * FROM {tableName}";
+
+        try
+        {
+            using (var conn = _dataSource.OpenConnection())
+            {
+                return conn.Query<T>(sql);
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Use globalExceptionHandler later
+            return Enumerable.Empty<T>();
+        }
+    }
+    
+    protected bool DeleteItem(string tableName, int itemId)
+    {
+        string sql = $"DELETE FROM {tableName} WHERE id=@id";
+        try
+        {
+            using (var conn = _dataSource.OpenConnection())
+            {
+                conn.Execute(sql, new { id = itemId });
+                return true;
+            }
+        }
+        catch
+        {
+            // TODO: Use globalExceptionHandler later
+            return false;
+        }
+    }
+    /// <summary>
+    /// This method is used to create a row inside a table in the database. It is a generic code which allows different parameter types and amounts.
+    /// </summary>
+    /// <param name="tableName">The name of the table in the DB</param>
+    /// <param name="parameters">Parameters that the DB requires</param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    protected int CreateItem<T>(string tableName, object parameters)
+    {
+        var properties = parameters.GetType().GetProperties();
+        var columns = string.Join(", ", properties.Select(prop => prop.Name));
+        var values = string.Join(", ", properties.Select(prop => $"@{prop.Name}"));
+
+        string sql = $"INSERT INTO {tableName} ({columns}) VALUES ({values}) RETURNING id";
+
+        try
+        {
+            using (var conn = _dataSource.OpenConnection())
+            {
+                return conn.ExecuteScalar<int>(sql, parameters);
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Use globalExceptionHandler later
+            return -1;
+        }
+    }
+    /// <summary>
+    /// Updates a row inside a table in the database. It is a generic code which allows different parameter types and amounts.
+    /// </summary>
+    /// <param name="tableName">Name of the table inside the DB.</param>
+    /// <param name="entity">The entity that has the parameters (eg.: Account account).</param>
+    /// <param name="conditionColumnName">The name of the column which the row can be found by inside the DB.</param>
+    /// <typeparam name="T">The type of the entity.</typeparam>
+    /// <returns>Returns a boolean value if the update was successful or not.</returns>
+    public bool UpdateEntity<T>(string tableName, T entity, string conditionColumnName)
+    {
+        var properties = typeof(T).GetProperties();
+
+        // Exclude the property used in the WHERE clause from the update set
+        var updateSet = string.Join(", ", properties.Where(prop => prop.Name != conditionColumnName)
+            .Select(prop => $"{prop.Name} = @{prop.Name}"));
+        
+        var sql = $"UPDATE {tableName} SET {updateSet} WHERE {conditionColumnName} = @{conditionColumnName}";
+
+        try
+        {
+            using (var conn = _dataSource.OpenConnection())
+            {
+                conn.Execute(sql, entity);
+                return true;
+            }
+        }
+        catch
+        {
+            //TODO: use globalExceptionHandler later
+            return false;
+        }
+    }
+}
