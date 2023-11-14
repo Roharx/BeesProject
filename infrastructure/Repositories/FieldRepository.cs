@@ -4,90 +4,39 @@ using Npgsql;
 
 namespace infrastructure.Repositories;
 
-public class FieldRepository
+public class FieldRepository : RepositoryBase
 {
-    private NpgsqlDataSource _dataSource;
+    private readonly NpgsqlDataSource _dataSource;
 
-    public FieldRepository(NpgsqlDataSource dataSource)
+    public FieldRepository(NpgsqlDataSource dataSource) : base(dataSource)
     {
         _dataSource = dataSource;
     }
 
     public IEnumerable<FieldQuery> GetAllFields()
     {
-        const string sql = $@"SELECT * FROM field";
-
-        using (var conn = _dataSource.OpenConnection())
-        {
-            return conn.Query<FieldQuery>(sql);
-        }
+        return GetAllItems<FieldQuery>("field");
     }
 
     public int CreateField(string fieldName, string fieldLocation)
     {
-        const string sql = $@"INSERT INTO field (name, location) VALUES (@name, @location)";
+        var parameters = new
+        {
+            name = fieldName,
+            location = fieldLocation
+        };
 
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                // ExecuteScalar is used to retrieve a single value (in this case, the ID).
-                var fieldId = conn.ExecuteScalar<int>(sql, new
-                {
-                    name = fieldName,
-                    location = fieldLocation
-                });
-                return fieldId;
-            }
-        }
-        catch (Exception ex)
-        {
-            //TODO: use globalExceptionHandler later
-            return -1;
-        }
+        return CreateItem<int>("bee", parameters);//TODO: check if it works, fix if not
     }
 
     public bool UpdateField(FieldQuery field)
     {
-        const string sql = $@"UPDATE field SET name=@name, location=@location WHERE id=@id";
-
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                conn.Execute(sql, new
-                {
-                    //Protects against sql injection if used properly TODO: Ask to be sure
-                    id = field.FieldId,
-                    name = field.FieldName,
-                    location = field.FieldLocation
-                });
-                return true;
-            }
-        }
-        catch
-        {
-            //TODO: use globalExceptionHandler later
-            return false;
-        }
+        return UpdateEntity("field", field, "id");
     }
 
     public bool DeleteField(int fieldId)
     {
-        const string sql = $@"DELETE FROM field WHERE id=@id";
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                conn.Execute(sql, new { id = fieldId });
-                return true;
-            }
-        }
-        catch
-        {
-            //TODO: use globalExceptionHandler later
-            return false;
-        }
+        return DeleteItem("field", fieldId);
     }
 
     //TODO: change location later probably

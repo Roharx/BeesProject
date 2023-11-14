@@ -7,9 +7,12 @@ namespace infrastructure.Repositories;
 
 public class AccountRepository : RepositoryBase
 {
-    private NpgsqlDataSource _dataSource;
+    private readonly NpgsqlDataSource _dataSource;
 
-    public AccountRepository(NpgsqlDataSource dataSource) : base(dataSource) { }
+    public AccountRepository(NpgsqlDataSource dataSource) : base(dataSource)
+    {
+        _dataSource = dataSource;
+    }
 
     public IEnumerable<AccountQuery> GetAllAccounts()
     {

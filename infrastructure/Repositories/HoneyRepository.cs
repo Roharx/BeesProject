@@ -5,105 +5,42 @@ using Npgsql;
 
 namespace infrastructure.Repositories;
 
-public class HoneyRepository
+public class HoneyRepository : RepositoryBase
 {
     private NpgsqlDataSource _dataSource;
 
-    public HoneyRepository(NpgsqlDataSource dataSource)
+    public HoneyRepository(NpgsqlDataSource dataSource) : base(dataSource)
     {
         _dataSource = dataSource;
     }
 
     public IEnumerable<HoneyQuery> GetAllHoneys()
     {
-        const string sql = $@"SELECT * FROM honey";
-
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                return conn.Query<HoneyQuery>(sql);
-            }
-        }
-        catch (Exception ex)
-        {
-            //TODO: use globalExceptionHandler later
-            return Enumerable.Empty<HoneyQuery>();
-        }
+        return GetAllItems<HoneyQuery>("honey");
     }
 
-    public int CreateHoney(int harvestId, string honeyName, bool honeyLiquidity, string honeyFlowers, float honeyMoisture)
+    public int CreateHoney(int harvestId, string honeyName, bool honeyLiquidity, string honeyFlowers,
+        float honeyMoisture)
     {
-        const string sql =
-            $@"INSERT INTO honey (harvest_id, name, liquid, flowers, moisture) VALUES (@id, @name, @liquid, @flowers, @moisture)";
+        var parameters = new
+        {
+            harvest_id = harvestId,
+            name = honeyName,
+            liquid = honeyLiquidity,
+            flowers = honeyFlowers,
+            moisture = honeyMoisture
+        };
 
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                // ExecuteScalar is used to retrieve a single value (in this case, the ID).
-                var honeyId = conn.ExecuteScalar<int>(sql, new
-                {
-                    id = harvestId,
-                    name = honeyName,
-                    liquid = honeyLiquidity,
-                    flowers = honeyFlowers,
-                    moisture = honeyMoisture
-                });
-                return honeyId;
-            }
-        }
-        catch (Exception ex)
-        {
-            //TODO: use globalExceptionHandler later
-            return -1;
-        }
+        return CreateItem<int>("honey", parameters);
     }
 
     public bool UpdateHoney(HoneyQuery honey)
     {
-        const string sql = $@"UPDATE honey SET harvest_id=@harvestId name=@name, liquid=@liquid, flowers=@flowers, moisture=@moisture WHERE id=@id";
-
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                conn.Execute(sql, new
-                {
-                    //Protects against sql injection if used properly TODO: Ask to be sure
-                    harvest_id = honey.HoneyHarvest,
-                    name = honey.HoneyName,
-                    liquid = honey.HoneyLiquid,
-                    flowers = honey.HoneyFlowers,
-                    moisture = honey.HoneyMoisture,
-                    id = honey.HoneyId
-                });
-                return true;
-            }
-        }
-        catch
-        {
-            //TODO: use globalExceptionHandler later
-            return false;
-        }
+        return UpdateEntity("honey", honey, "id");
     }
 
     public bool DeleteHoney(int honeyId)
     {
-        const string sql = $@"DELETE FROM honey WHERE id=@id";
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                conn.Execute(sql, new { id = honeyId });
-                return true;
-            }
-        }
-        catch
-        {
-            //TODO: use globalExceptionHandler later
-            return false;
-        }
-        
+        return DeleteItem("honey", honeyId);
     }
 }

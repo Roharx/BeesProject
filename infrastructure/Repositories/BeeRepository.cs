@@ -4,98 +4,36 @@ using Npgsql;
 
 namespace infrastructure.Repositories;
 
-public class BeeRepository
+public class BeeRepository : RepositoryBase
 {
-    private NpgsqlDataSource _dataSource;
+    private readonly NpgsqlDataSource _dataSource;
 
-    public BeeRepository(NpgsqlDataSource dataSource)
+    public BeeRepository(NpgsqlDataSource dataSource) : base(dataSource)
     {
         _dataSource = dataSource;
     }
     public IEnumerable<BeeQuery> GetAllBees()
     {
-        const string sql = $@"SELECT * FROM bee";
-
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                return conn.Query<BeeQuery>(sql);
-            }
-        }
-        catch (Exception ex)
-        {
-            //TODO: use globalExceptionHandler later
-            return Enumerable.Empty<BeeQuery>();
-        }
+        return GetAllItems<BeeQuery>("bee");
     }
     public int CreateBee(string beeName, string beeDescription, string beeComment)
     {
-        const string sql =
-            $@"INSERT INTO bee (name, description, comment) VALUES (@name, @description, @comment)";
+        var parameters = new
+        {
+            name = beeName,
+            description = beeDescription,
+            comment = beeComment
+        };
 
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                // ExecuteScalar is used to retrieve a single value (in this case, the ID).
-                var beeId = conn.ExecuteScalar<int>(sql, new
-                {
-                    name = beeName,
-                    description = beeDescription,
-                    comment = beeComment
-                });
-                return beeId;
-            }
-        }
-        catch (Exception ex)
-        {
-            //TODO: use globalExceptionHandler later
-            return -1;
-        }
+        return CreateItem<int>("bee", parameters);//TODO: check if it works, fix if not
     }
     public bool UpdateBee(BeeQuery bee)
     {
-        const string sql = $@"UPDATE bee SET name=@name, description=@description, comment=@comment WHERE id=@id";
-
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                conn.Execute(sql, new
-                {
-                    //Protects against sql injection if used properly TODO: Ask to be sure
-                    name = bee.BeeName,
-                    description = bee.BeeDescription,
-                    comment = bee.BeeComment,
-                    id = bee.BeeId
-                });
-                return true;
-            }
-        }
-        catch
-        {
-            //TODO: use globalExceptionHandler later
-            return false;
-        }
+        return UpdateEntity("bee", bee, "id");
     }
-    
+
     public bool DeleteBee(int beeId)
     {
-        const string sql = $@"DELETE FROM bee WHERE id=@id";
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                conn.Execute(sql, new { id = beeId });
-                return true;
-            }
-        }
-        catch
-        {
-            //TODO: use globalExceptionHandler later
-            return false;
-        }
-        
+        return DeleteItem("bee", beeId);
     }
 }
