@@ -59,6 +59,7 @@ public class AilmentRepository : RepositoryBase
         }
     }
     
+    //TODO: implement later
     public IEnumerable<AilmentQuery> GetGlobalAilments()
     {
         const string sql = $@"SELECT * FROM ailment WHERE severity IN (5, 6)";//TODO: test

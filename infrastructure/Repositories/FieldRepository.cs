@@ -47,19 +47,8 @@ public class FieldRepository : RepositoryBase
     /// <returns>Returns an integer array that contains the ids for all the fields that are connected to the account id.</returns>
     public IEnumerable<int> GetFieldIdsForAccount(int accountId)
     {
-        const string sql = $@"SELECT field_id FROM field_account WHERE account_id = @accountId";
-
-        try
-        {
-            using (var conn = _dataSource.OpenConnection())
-            {
-                return conn.Query<int>(sql, new { accountId });
-            }
-        }
-        catch (Exception ex)
-        {
-            //TODO: use globalExceptionHandler later
-            return Enumerable.Empty<int>();
-        }
+        var parameters = new { id = accountId };
+        
+        return GetItemsByParameters<int>("field", parameters);
     }
 }

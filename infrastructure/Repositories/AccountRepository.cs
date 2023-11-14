@@ -45,13 +45,8 @@ public class AccountRepository : RepositoryBase
     //TODO: remove later, don't need it
     public AccountQuery GetAccountByName(string accountName)
     {
-        const string sql = $@"SELECT * FROM account WHERE id = @accountId";
+        var parameters = new { name = accountName };
 
-        using (var conn = _dataSource.OpenConnection())
-        {
-            return conn.QueryFirstOrDefault<AccountQuery>(sql, new { accountName }) ??
-                   throw new Exception(
-                       $"{accountName} not found"); //TODO: Change to GlobalExceptionHandler later, delete later
-        }
+        return GetSingleItemByParameters<AccountQuery>("account", accountName);
     }
 }

@@ -12,6 +12,12 @@ public class RepositoryBase
         _dataSource = dataSource;
     }
 
+    /// <summary>
+    /// Returns all items from the given table inside the database.
+    /// </summary>
+    /// <param name="tableName">Name of the table.</param>
+    /// <typeparam name="T">The expected value (eg.: AccountQuery)</typeparam>
+    /// <returns>An IEnuberable<T> with the type given to it.</returns>
     protected IEnumerable<T> GetAllItems<T>(string tableName)
     {
         string sql = $"SELECT * FROM {tableName}";
@@ -29,7 +35,67 @@ public class RepositoryBase
             return Enumerable.Empty<T>();
         }
     }
-    
+
+    /// <summary>
+    /// Returns all items from the given table inside the database that has the given parameters.
+    /// </summary>
+    /// <param name="tableName">Name of the table.</param>
+    /// <param name="parameters">Parameters that the DB requires</param>
+    /// <typeparam name="T">The expected value (eg.: AccountQuery)</typeparam>
+    /// <returns></returns>
+    protected IEnumerable<T> GetItemsByParameters<T>(string tableName, object parameters)
+    {
+        var properties = parameters.GetType().GetProperties();
+        var whereClause = string.Join(" AND ", properties.Select(prop => $"{prop.Name} = @{prop.Name}"));
+        var sql = $"SELECT * FROM {tableName} WHERE {whereClause}";
+
+        try
+        {
+            using (var conn = _dataSource.OpenConnection())
+            {
+                return conn.Query<T>(sql, parameters);
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Use globalExceptionHandler later
+            return Enumerable.Empty<T>();
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="tableName">Name of the table.</param>
+    /// <param name="parameters">Parameters that the DB requires</param>
+    /// <typeparam name="T">The expected value (eg.: AccountQuery)</typeparam>
+    /// <returns></returns>
+    protected T GetSingleItemByParameters<T>(string tableName, object parameters)
+    {
+        var properties = parameters.GetType().GetProperties();
+        var whereClause = string.Join(" AND ", properties.Select(prop => $"{prop.Name} = @{prop.Name}"));
+        var sql = $"SELECT * FROM {tableName} WHERE {whereClause}";
+
+        try
+        {
+            using (var conn = _dataSource.OpenConnection())
+            {
+                return conn.QueryFirstOrDefault<T>(sql, parameters);
+            }
+        }
+        catch (Exception ex)
+        {
+            // TODO: Use globalExceptionHandler later
+            return default(T);
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="tableName">Name of the table.</param>
+    /// <param name="itemId"></param>
+    /// <returns></returns>
     protected bool DeleteItem(string tableName, int itemId)
     {
         string sql = $"DELETE FROM {tableName} WHERE id=@id";
@@ -47,12 +113,13 @@ public class RepositoryBase
             return false;
         }
     }
+
     /// <summary>
     /// This method is used to create a row inside a table in the database. It is a generic code which allows different parameter types and amounts.
     /// </summary>
     /// <param name="tableName">The name of the table in the DB</param>
     /// <param name="parameters">Parameters that the DB requires</param>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The expected value (eg.: AccountQuery)</typeparam>
     /// <returns></returns>
     protected int CreateItem<T>(string tableName, object parameters)
     {
@@ -75,6 +142,7 @@ public class RepositoryBase
             return -1;
         }
     }
+
     /// <summary>
     /// Updates a row inside a table in the database. It is a generic code which allows different parameter types and amounts.
     /// </summary>
@@ -90,7 +158,7 @@ public class RepositoryBase
         // Exclude the property used in the WHERE clause from the update set
         var updateSet = string.Join(", ", properties.Where(prop => prop.Name != conditionColumnName)
             .Select(prop => $"{prop.Name} = @{prop.Name}"));
-        
+
         var sql = $"UPDATE {tableName} SET {updateSet} WHERE {conditionColumnName} = @{conditionColumnName}";
 
         try
